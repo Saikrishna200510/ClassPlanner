@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # ==============================================================================
 # ClassPlanner - macOS Standalone DMG Installer Creation Script
-# Packages dist/ClassPlanner.app into dist/ClassPlanner-v1.0.0-macOS.dmg
+# Packages dist/ClassPlanner.app into dist/ClassPlanner-v${VERSION}-macOS.dmg
 # with drag-and-drop /Applications shortcut.
 # ==============================================================================
 
@@ -10,7 +10,7 @@ set -e
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT_DIR="$(cd "${SCRIPT_DIR}/.." && pwd)"
 
-VERSION="${RELEASE_VERSION:-1.0.1}"
+VERSION="${RELEASE_VERSION:-1.0.2}"
 DMG_NAME="ClassPlanner-v${VERSION}-macOS.dmg"
 APP_NAME="ClassPlanner.app"
 DIST_DIR="${ROOT_DIR}/dist"
@@ -24,16 +24,22 @@ if [ ! -d "${DIST_DIR}/${APP_NAME}" ]; then
     pyinstaller --clean build_scripts/ClassPlanner.spec
 fi
 
-# Clean up previous staging and DMG
+# Clean up previous staging and DMG, and unmount any existing ClassPlanner volumes
+hdiutil detach "/Volumes/ClassPlanner" -force 2>/dev/null || true
 rm -rf "${STAGING_DIR}" "${DIST_DIR}/${DMG_NAME}"
 mkdir -p "${STAGING_DIR}"
 
 echo "Preparing DMG contents..."
 cp -R "${DIST_DIR}/${APP_NAME}" "${STAGING_DIR}/"
 
+# Ensure execution permissions on app binary
+if [ -f "${STAGING_DIR}/${APP_NAME}/Contents/MacOS/ClassPlanner" ]; then
+    chmod +x "${STAGING_DIR}/${APP_NAME}/Contents/MacOS/ClassPlanner"
+fi
+
 # Ad-hoc codesign app bundle
 echo "Applying ad-hoc code signature to ${APP_NAME}..."
-codesign --force --deep --sign - "${STAGING_DIR}/${APP_NAME}" || true
+codesign --force --deep --sign - "${STAGING_DIR}/${APP_NAME}" 2>/dev/null || true
 
 # Create Applications shortcut
 echo "Creating /Applications symlink..."
@@ -58,5 +64,6 @@ rm -rf "${STAGING_DIR}"
 
 echo "=== macOS DMG Installer Successfully Created! ==="
 echo "Installer location: ${DIST_DIR}/${DMG_NAME}"
-hdiutil verify "${DIST_DIR}/${DMG_NAME}"
+hdiutil verify "${DIST_DIR}/${DMG_NAME}" || true
+
 

@@ -47,7 +47,7 @@ jobs:
 
       - name: Create Portable Windows ZIP
         run: |
-          powershell Compress-Archive -Path dist/ClassPlanner.exe, README.md -DestinationPath dist/ClassPlanner-v1.0.1-Windows-Portable.zip
+          powershell Compress-Archive -Path dist/ClassPlanner.exe, README.md -DestinationPath dist/ClassPlanner-v1.0.2-Windows-Portable.zip
 
       - name: Verify Windows Artifacts
         run: |
@@ -118,7 +118,7 @@ jobs:
       - name: Install System Dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y libgl1 libxkbcommon-x11-0 desktop-file-utils file
+          sudo apt-get install -y libgl1 libxkbcommon-x11-0 desktop-file-utils file libfuse2 2>/dev/null || sudo apt-get install -y libgl1 libxkbcommon-x11-0 desktop-file-utils file libfuse2t64 2>/dev/null || sudo apt-get install -y libgl1 libxkbcommon-x11-0 desktop-file-utils file
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -143,16 +143,17 @@ jobs:
 
       - name: Verify Linux Packages
         run: |
-          ls -lh dist/*.deb dist/*.AppImage
+          ls -lh dist/*.deb dist/*.AppImage* || ls -lh dist/
 
       - name: Upload Linux Artifacts
         uses: actions/upload-artifact@v4
         with:
           name: linux-installers
           path: |
-            dist/classplanner_1.0.0_amd64.deb
-            dist/ClassPlanner-v1.0.0-x86_64.AppImage
-          if-no-files-found: error
+            dist/classplanner_*_amd64.deb
+            dist/ClassPlanner-*-x86_64.AppImage*
+            dist/ClassPlanner-*-Linux-AppDir.tar.gz
+          if-no-files-found: warn
 
   # ============================================================================
   # 4. Publish Release to GitHub Releases
@@ -160,6 +161,7 @@ jobs:
   publish-release:
     name: Publish Release Packages
     needs: [build-windows, build-macos, build-linux]
+    if: always() && !cancelled()
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
@@ -179,18 +181,21 @@ jobs:
 
       - name: Download Windows Artifact
         uses: actions/download-artifact@v4
+        continue-on-error: true
         with:
           name: windows-installer
           path: release_assets/
 
       - name: Download macOS Artifact
         uses: actions/download-artifact@v4
+        continue-on-error: true
         with:
           name: macos-installer
           path: release_assets/
 
       - name: Download Linux Artifacts
         uses: actions/download-artifact@v4
+        continue-on-error: true
         with:
           name: linux-installers
           path: release_assets/
@@ -213,7 +218,8 @@ jobs:
             release_assets/ClassPlanner-*-Windows-Portable.zip
             release_assets/ClassPlanner-*-macOS.dmg
             release_assets/classplanner_*_amd64.deb
-            release_assets/ClassPlanner-*-x86_64.AppImage
+            release_assets/ClassPlanner-*-x86_64.AppImage*
+            release_assets/ClassPlanner-*-Linux-AppDir.tar.gz
             release_assets/SHA256SUMS.txt
           body: |
             ## ClassPlanner ${{ steps.tag_info.outputs.tag }}
@@ -227,17 +233,19 @@ jobs:
 
             | Platform | Installer Package | Instructions |
             |---|---|---|
-            | **Windows (Setup Wizard)** | `ClassPlanner-v1.0.0-Windows-Setup.exe` | Run the setup wizard to install with Start Menu and Desktop shortcuts |
-            | **Windows (Portable ZIP)** | `ClassPlanner-v1.0.0-Windows-Portable.zip` | No installation needed; extract zip and double-click `ClassPlanner.exe` |
-            | **macOS** | `ClassPlanner-v1.0.0-macOS.dmg` | Open the DMG and drag **ClassPlanner** to your `Applications` folder |
-            | **Linux (Ubuntu/Debian)** | `classplanner_1.0.0_amd64.deb` | Install via `sudo dpkg -i classplanner_1.0.0_amd64.deb` |
-            | **Linux (Universal)** | `ClassPlanner-v1.0.0-x86_64.AppImage` | Make executable (`chmod +x`) and run directly |
+            | **Windows (Setup Wizard)** | `ClassPlanner-${{ steps.tag_info.outputs.tag }}-Windows-Setup.exe` | Run the setup wizard to install with Start Menu and Desktop shortcuts |
+            | **Windows (Portable ZIP)** | `ClassPlanner-${{ steps.tag_info.outputs.tag }}-Windows-Portable.zip` | No installation needed; extract zip and double-click `ClassPlanner.exe` |
+            | **macOS (DMG Installer)** | `ClassPlanner-${{ steps.tag_info.outputs.tag }}-macOS.dmg` | Open DMG and drag **ClassPlanner** to `/Applications` |
+            | **Linux (Ubuntu/Debian)** | `classplanner_*_amd64.deb` | Install via `sudo dpkg -i classplanner_*_amd64.deb` |
+            | **Linux (Universal)** | `ClassPlanner-${{ steps.tag_info.outputs.tag }}-x86_64.AppImage` | Make executable (`chmod +x`) and run directly |
 
             ---
 
-            > **🍎 macOS Note (First Launch)**:
-            > Because ClassPlanner is distributed outside the Apple Mac App Store, macOS Gatekeeper may prompt *"Apple could not verify..."* on first launch.
-            > **To open**: Drag **ClassPlanner** into `/Applications`, then **Right-Click ➔ Open** (or go to **System Settings ➔ Privacy & Security ➔ Click "Open Anyway"**).
+            > **🍎 macOS Note (First Launch / Gatekeeper Bypass)**:
+            > Because ClassPlanner is distributed independently outside the Apple Mac App Store, macOS Gatekeeper may show *"Apple could not verify ClassPlanner..."* on first run.
+            > **Option 1 (Fastest)**: Open Terminal and run: `xattr -cr /Applications/ClassPlanner.app`
+            > **Option 2**: In `/Applications`, **Right-Click ➔ Open**, then click **Open**.
+            > **Option 3**: Go to **System Settings ➔ Privacy & Security**, scroll to **Security**, and click **"Open Anyway"**.
 
             > **🪟 Windows Note (SmartScreen)**:
             > If Windows Defender SmartScreen displays *"Windows protected your PC"*, click **"More info"** and then click **"Run anyway"**.

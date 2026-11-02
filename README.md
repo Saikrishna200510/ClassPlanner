@@ -40,11 +40,11 @@ Download the appropriate standalone installer from the [GitHub Releases](https:/
 
 | Platform | Installer Package | Installation Instructions |
 |---|---|---|
-| **Windows (Setup Wizard)** | `ClassPlanner-v1.0.0-Windows-Setup.exe` | Run the installation wizard; automatically creates Start Menu & Desktop shortcuts, includes uninstaller |
-| **Windows (Portable ZIP)** | `ClassPlanner-v1.0.0-Windows-Portable.zip` | Extract the ZIP and double-click `ClassPlanner.exe` (no installation required) |
-| **macOS** | `ClassPlanner-v1.0.0-macOS.dmg` | Open the DMG image and drag **ClassPlanner** to your `Applications` folder |
-| **Linux (Ubuntu/Debian)** | `classplanner_1.0.0_amd64.deb` | Install via terminal: `sudo dpkg -i classplanner_1.0.0_amd64.deb` |
-| **Linux (Universal)** | `ClassPlanner-v1.0.0-x86_64.AppImage` | Make executable and run: `chmod +x ClassPlanner-v1.0.0-x86_64.AppImage && ./ClassPlanner-v1.0.0-x86_64.AppImage` |
+| **Windows (Setup Wizard)** | `ClassPlanner-v1.0.2-Windows-Setup.exe` | Run the installation wizard; automatically creates Start Menu & Desktop shortcuts, includes uninstaller |
+| **Windows (Portable ZIP)** | `ClassPlanner-v1.0.2-Windows-Portable.zip` | Extract the ZIP and double-click `ClassPlanner.exe` (no installation required) |
+| **macOS (DMG Installer)** | `ClassPlanner-v1.0.2-macOS.dmg` | Open the DMG image and drag **ClassPlanner** to your `Applications` folder |
+| **Linux (Ubuntu/Debian)** | `classplanner_1.0.2_amd64.deb` | Install via terminal: `sudo dpkg -i classplanner_1.0.2_amd64.deb` |
+| **Linux (Universal)** | `ClassPlanner-v1.0.2-x86_64.AppImage` | Make executable and run: `chmod +x ClassPlanner-v1.0.2-x86_64.AppImage && ./ClassPlanner-v1.0.2-x86_64.AppImage` |
 
 *No Python, VS Code, or developer tooling required.*
 

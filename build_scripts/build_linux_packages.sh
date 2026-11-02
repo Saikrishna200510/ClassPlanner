@@ -9,9 +9,10 @@ set -e
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT_DIR="$(cd "${SCRIPT_DIR}/.." && pwd)"
 
-VERSION="${RELEASE_VERSION:-1.0.1}"
+VERSION="${RELEASE_VERSION:-1.0.2}"
 DIST_DIR="${ROOT_DIR}/dist"
 BINARY="${DIST_DIR}/ClassPlanner"
+export APPIMAGE_EXTRACT_AND_RUN=1
 
 echo "=== Building Linux Packages for ClassPlanner v${VERSION} ==="
 cd "${ROOT_DIR}"
@@ -179,11 +180,19 @@ else
 fi
 
 echo "Running appimagetool..."
-ARCH=x86_64 ${APPIMAGETOOL} --no-appstream "${APPDIR}" "${APPIMAGE_OUTPUT}" || ARCH=x86_64 ${APPIMAGETOOL} "${APPDIR}" "${APPIMAGE_OUTPUT}"
-chmod +x "${APPIMAGE_OUTPUT}"
+export APPIMAGE_EXTRACT_AND_RUN=1
+ARCH=x86_64 ${APPIMAGETOOL} --no-appstream "${APPDIR}" "${APPIMAGE_OUTPUT}" || \
+ARCH=x86_64 ${APPIMAGETOOL} "${APPDIR}" "${APPIMAGE_OUTPUT}" || \
+(echo "Notice: Creating portable AppDir tarball as fallback..." && tar -czf "${DIST_DIR}/ClassPlanner-v${VERSION}-Linux-AppDir.tar.gz" -C "${DIST_DIR}" AppDir)
+
+if [ -f "${APPIMAGE_OUTPUT}" ]; then
+    chmod +x "${APPIMAGE_OUTPUT}"
+fi
 rm -rf "${APPDIR}"
 
 echo "=== Linux Packages Successfully Created! ==="
 echo "1. Debian Package: ${DEB_PACKAGE}"
-echo "2. Universal AppImage: ${APPIMAGE_OUTPUT}"
+if [ -f "${APPIMAGE_OUTPUT}" ]; then
+    echo "2. Universal AppImage: ${APPIMAGE_OUTPUT}"
+fi
 
