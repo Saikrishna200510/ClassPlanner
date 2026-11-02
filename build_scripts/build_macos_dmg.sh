@@ -31,6 +31,10 @@ mkdir -p "${STAGING_DIR}"
 echo "Preparing DMG contents..."
 cp -R "${DIST_DIR}/${APP_NAME}" "${STAGING_DIR}/"
 
+# Ad-hoc codesign app bundle
+echo "Applying ad-hoc code signature to ${APP_NAME}..."
+codesign --force --deep --sign - "${STAGING_DIR}/${APP_NAME}" || true
+
 # Create Applications shortcut
 echo "Creating /Applications symlink..."
 ln -s /Applications "${STAGING_DIR}/Applications"
@@ -55,3 +59,4 @@ rm -rf "${STAGING_DIR}"
 echo "=== macOS DMG Installer Successfully Created! ==="
 echo "Installer location: ${DIST_DIR}/${DMG_NAME}"
 hdiutil verify "${DIST_DIR}/${DMG_NAME}"
+

@@ -47,6 +47,19 @@ Download the appropriate standalone installer from the [GitHub Releases](https:/
 
 *No Python, VS Code, or developer tooling required.*
 
+> [!TIP]
+> **macOS First-Time Open (Gatekeeper Instructions)**:
+> If macOS shows *"Apple could not verify ClassPlanner..."*:
+> 1. Drag **ClassPlanner** from the DMG into your **Applications** folder (do not run directly from inside the DMG).
+> 2. Open Finder, go to **Applications**, **Right-Click** (or Control-Click) **ClassPlanner**, and select **Open**.
+> 3. Click **Open** on the confirmation prompt.
+> 
+> *Alternatively*, go to **System Settings ➔ Privacy & Security ➔ Security** and click **"Open Anyway"**, or run this single command in Terminal:
+> ```bash
+> xattr -cr /Applications/ClassPlanner.app
+> ```
+> This is only needed on the first launch. Subsequent launches open normally with a standard double-click.
+
 ### Running from Source (Developers)
 
 1. **Clone the repository:**

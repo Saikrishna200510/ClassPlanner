@@ -60,3 +60,4 @@ Type: files; Name: "{app}\resources\icon.ico"
 Type: files; Name: "{app}\README.md"
 Type: dirifempty; Name: "{app}\resources"
 Type: dirifempty; Name: "{app}"
+

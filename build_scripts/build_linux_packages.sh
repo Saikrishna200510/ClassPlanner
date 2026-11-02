@@ -186,3 +186,4 @@ rm -rf "${APPDIR}"
 echo "=== Linux Packages Successfully Created! ==="
 echo "1. Debian Package: ${DEB_PACKAGE}"
 echo "2. Universal AppImage: ${APPIMAGE_OUTPUT}"
+
