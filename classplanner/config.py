@@ -8,37 +8,51 @@ import sys
 
 APP_NAME = "ClassPlanner"
 APP_VERSION = "1.0.0"
-APP_ORGANIZATION = "Educational Institution Software"
+APP_ORGANIZATION = "SL IT Solutions"
 
 # Application Base Directory
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+if getattr(sys, "frozen", False):
+    BASE_DIR = getattr(sys, "_MEIPASS", os.path.dirname(os.path.abspath(__file__)))
+else:
+    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 # Data and Database Directory
 custom_data_dir = os.environ.get("CLASSPLANNER_DATA_DIR")
 if custom_data_dir:
     DATA_DIR = custom_data_dir
+elif getattr(sys, "frozen", False):
+    # Standalone packaged application: write to OS-standard user appdata folder
+    if sys.platform == "win32":
+        base_user_dir = os.environ.get("APPDATA", os.path.expanduser("~"))
+        DATA_DIR = os.path.join(base_user_dir, "ClassPlanner", "data")
+    elif sys.platform == "darwin":
+        DATA_DIR = os.path.join(os.path.expanduser("~"), "Library", "Application Support", "ClassPlanner", "data")
+    else:
+        base_user_dir = os.environ.get("XDG_DATA_HOME", os.path.join(os.path.expanduser("~"), ".local", "share"))
+        DATA_DIR = os.path.join(base_user_dir, "classplanner", "data")
 else:
-    # Always use the local project data directory first if it exists, ensuring consistency
+    # Development mode: prefer local workspace data/ directory if present
     project_data_dir = os.path.join(os.path.dirname(BASE_DIR), "data")
     if os.path.exists(project_data_dir):
         DATA_DIR = project_data_dir
     else:
-        try:
-            home_data_dir = os.path.join(os.path.expanduser("~"), ".classplanner")
-            os.makedirs(home_data_dir, exist_ok=True)
-            test_file = os.path.join(home_data_dir, ".test_write")
-            with open(test_file, "w") as f:
-                f.write("ok")
-            os.remove(test_file)
-            DATA_DIR = home_data_dir
-        except (PermissionError, OSError):
-            DATA_DIR = project_data_dir
+        DATA_DIR = os.path.join(os.path.expanduser("~"), ".classplanner", "data")
 
 os.makedirs(DATA_DIR, exist_ok=True)
 
 DEFAULT_DB_PATH = os.path.join(DATA_DIR, "classplanner.db")
 BACKUP_DIR = os.path.join(DATA_DIR, "backups")
 os.makedirs(BACKUP_DIR, exist_ok=True)
+
+# Production Backend & Cloud Synchronization Settings
+# Reads from environment variables if configured, with secure fallback
+PRODUCTION_API_URL = os.environ.get("CLASSPLANNER_API_URL", "https://api.classplanner.slit.edu")
+SUPABASE_URL = os.environ.get("SUPABASE_URL", "https://lmllravkxpdqigkfprgx.supabase.co")
+SUPABASE_HOST = os.environ.get("SUPABASE_HOST", "db.lmllravkxpdqigkfprgx.supabase.co")
+SUPABASE_PORT = int(os.environ.get("SUPABASE_PORT", "5432"))
+SUPABASE_DBNAME = os.environ.get("SUPABASE_DBNAME", "postgres")
+SUPABASE_USER = os.environ.get("SUPABASE_USER", "postgres")
+SUPABASE_DEFAULT_PASSWORD = os.environ.get("SUPABASE_PASSWORD", "Krishna@6301986030")
 
 # Standard Days of Week
 DAYS_OF_WEEK = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]

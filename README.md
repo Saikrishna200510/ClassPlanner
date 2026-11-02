@@ -36,9 +36,18 @@ ClassPlanner is a desktop application designed to simplify college timetable man
 
 ## Installation
 
-Download the appropriate installer from the GitHub Releases section.
+Download the appropriate standalone installer from the [GitHub Releases](https://github.com/Saikrishna200510/ClassPlanner/releases) section:
 
-### Running from Source
+| Platform | Installer Package | Installation Instructions |
+|---|---|---|
+| **Windows** | `ClassPlanner-v1.0.0-Windows-Setup.exe` | Run the installation wizard; automatically creates Start Menu & Desktop shortcuts, includes uninstaller |
+| **macOS** | `ClassPlanner-v1.0.0-macOS.dmg` | Open the DMG image and drag **ClassPlanner** to your `Applications` folder |
+| **Linux (Ubuntu/Debian)** | `classplanner_1.0.0_amd64.deb` | Install via terminal: `sudo dpkg -i classplanner_1.0.0_amd64.deb` |
+| **Linux (Universal)** | `ClassPlanner-v1.0.0-x86_64.AppImage` | Make executable and run: `chmod +x ClassPlanner-v1.0.0-x86_64.AppImage && ./ClassPlanner-v1.0.0-x86_64.AppImage` |
+
+*No Python, VS Code, or developer tooling required.*
+
+### Running from Source (Developers)
 
 1. **Clone the repository:**
    ```bash

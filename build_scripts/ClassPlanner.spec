@@ -5,11 +5,12 @@ Cross-platform configuration for Windows, macOS, and Linux standalone executable
 """
 
 import sys
+import os
 from PyInstaller.utils.hooks import collect_data_files, collect_submodules
 
 block_cipher = None
 
-# Hidden imports needed for PySide6, reportlab, openpyxl, and sqlite3
+# Hidden imports needed for PySide6, reportlab, openpyxl, psycopg2, and sqlite3
 hidden_imports = [
     'PySide6.QtCore',
     'PySide6.QtGui',
@@ -25,9 +26,46 @@ hidden_imports = [
     'openpyxl.utils',
     'sqlite3',
     'hashlib',
+    'psycopg2',
+    'psycopg2.extras',
+    'classplanner',
+    'classplanner.config',
+    'classplanner.auth',
+    'classplanner.auth.auth_service',
+    'classplanner.auth.models',
+    'classplanner.database',
+    'classplanner.database.db_manager',
+    'classplanner.database.schema',
+    'classplanner.database.sample_data',
+    'classplanner.database.backup',
+    'classplanner.database.supabase_sync',
+    'classplanner.solver',
+    'classplanner.solver.timetable_generator',
+    'classplanner.solver.validator',
+    'classplanner.exporters',
+    'classplanner.exporters.pdf_exporter',
+    'classplanner.exporters.excel_exporter',
+    'classplanner.ui',
+    'classplanner.ui.styles',
+    'classplanner.ui.main_window',
+    'classplanner.ui.dialogs',
+    'classplanner.ui.widgets',
 ]
 
-datas = collect_data_files('reportlab')
+# Collect resources and reportlab data files
+datas = [
+    ('../classplanner/resources', 'classplanner/resources'),
+    ('../classplanner/database/supabase_multitenant.sql', 'classplanner/database'),
+] + collect_data_files('reportlab')
+
+# Determine platform-specific icon
+app_icon = None
+if sys.platform == 'win32':
+    app_icon = '../classplanner/resources/icon.ico'
+elif sys.platform == 'darwin':
+    app_icon = '../classplanner/resources/icon.icns'
+else:
+    app_icon = '../classplanner/resources/icon.png'
 
 a = Analysis(
     ['../run.py'],
@@ -66,7 +104,7 @@ exe = EXE(
     target_arch=None,
     codesign_identity=None,
     entitlements_file=None,
-    icon=None
+    icon=app_icon
 )
 
 # For macOS .app bundle
@@ -74,18 +112,18 @@ if sys.platform == 'darwin':
     app = BUNDLE(
         exe,
         name='ClassPlanner.app',
-        icon=None,
-        bundle_identifier='edu.college.classplanner',
+        icon='../classplanner/resources/icon.icns',
+        bundle_identifier='com.slit.classplanner',
         info_plist={
             'NSPrincipalClass': 'NSApplication',
             'NSAppleScriptEnabled': False,
             'CFBundleName': 'ClassPlanner',
             'CFBundleDisplayName': 'ClassPlanner',
-            'CFBundleGetInfoString': 'ClassPlanner Automated College Timetable Generator',
-            'CFBundleIdentifier': 'edu.college.classplanner',
+            'CFBundleGetInfoString': 'ClassPlanner - Multi-College Automated Timetable Management System',
+            'CFBundleIdentifier': 'com.slit.classplanner',
             'CFBundleVersion': '1.0.0',
             'CFBundleShortVersionString': '1.0.0',
+            'NSHumanReadableCopyright': 'Copyright © 2026 SL IT Solutions. All rights reserved.',
             'NSHighResolutionCapable': True,
         }
     )
-

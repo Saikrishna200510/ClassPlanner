@@ -4,9 +4,14 @@ Emulates classic Windows / Qt desktop software appearance.
 """
 
 import os
+import sys
 import base64
 
-RESOURCES_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "resources"))
+if getattr(sys, "frozen", False):
+    RESOURCES_DIR = os.path.join(getattr(sys, "_MEIPASS", ""), "classplanner", "resources")
+else:
+    RESOURCES_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "resources"))
+
 ARROW_ICON_PATH = os.path.join(RESOURCES_DIR, "down_arrow.png").replace("\\", "/")
 
 # Ensure down_arrow.png exists on disk

@@ -5,24 +5,31 @@ and Row Level Security (RLS) enforcement.
 """
 
 import os
+import sys
 from typing import Dict, Any, Tuple, Optional
 from urllib.parse import quote_plus
 import psycopg2
 from psycopg2.extras import RealDictCursor
 from classplanner.database.db_manager import DatabaseManager
+from classplanner.config import (
+    SUPABASE_HOST, SUPABASE_PORT, SUPABASE_DBNAME,
+    SUPABASE_USER, SUPABASE_DEFAULT_PASSWORD
+)
 
-
-SQL_FILE_PATH = os.path.join(os.path.dirname(__file__), "supabase_multitenant.sql")
+if getattr(sys, "frozen", False):
+    SQL_FILE_PATH = os.path.join(getattr(sys, "_MEIPASS", ""), "classplanner", "database", "supabase_multitenant.sql")
+else:
+    SQL_FILE_PATH = os.path.join(os.path.dirname(__file__), "supabase_multitenant.sql")
 
 
 class SupabaseManager:
     """Manages connections and multi-tenant synchronization with Supabase PostgreSQL."""
 
-    def __init__(self, host: str = "db.lmllravkxpdqigkfprgx.supabase.co",
-                 port: int = 5432,
-                 dbname: str = "postgres",
-                 user: str = "postgres",
-                 password: str = "Krishna@6301986030"):
+    def __init__(self, host: str = SUPABASE_HOST,
+                 port: int = SUPABASE_PORT,
+                 dbname: str = SUPABASE_DBNAME,
+                 user: str = SUPABASE_USER,
+                 password: str = SUPABASE_DEFAULT_PASSWORD):
         self.host = host.strip()
         self.port = int(port)
         self.dbname = dbname.strip()
