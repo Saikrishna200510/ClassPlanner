@@ -8,13 +8,20 @@ import os
 import sys
 from typing import Dict, Any, Tuple, Optional
 from urllib.parse import quote_plus
-import psycopg2
-from psycopg2.extras import RealDictCursor
 from classplanner.database.db_manager import DatabaseManager
 from classplanner.config import (
     SUPABASE_HOST, SUPABASE_PORT, SUPABASE_DBNAME,
     SUPABASE_USER, SUPABASE_DEFAULT_PASSWORD
 )
+
+try:
+    import psycopg2
+    from psycopg2.extras import RealDictCursor
+    HAS_PSYCOPG2 = True
+except (ImportError, Exception):
+    psycopg2 = None
+    RealDictCursor = None
+    HAS_PSYCOPG2 = False
 
 if getattr(sys, "frozen", False):
     SQL_FILE_PATH = os.path.join(getattr(sys, "_MEIPASS", ""), "classplanner", "database", "supabase_multitenant.sql")
@@ -46,6 +53,8 @@ class SupabaseManager:
 
     def get_connection(self):
         """Connects directly to the Supabase PostgreSQL database."""
+        if not HAS_PSYCOPG2 or psycopg2 is None:
+            raise RuntimeError("PostgreSQL client (psycopg2) is not available.")
         return psycopg2.connect(
             host=self.host,
             port=self.port,
@@ -57,6 +66,8 @@ class SupabaseManager:
 
     def test_connection(self) -> Tuple[bool, str]:
         """Tests network connectivity and credentials with Supabase."""
+        if not HAS_PSYCOPG2 or psycopg2 is None:
+            return False, "PostgreSQL driver (psycopg2) is not available in this environment."
         try:
             conn = self.get_connection()
             cur = conn.cursor()

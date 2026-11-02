@@ -6,13 +6,14 @@ Main Application Entry Point.
 
 import sys
 import os
+import traceback
 
 # Ensure package is in python path
 current_dir = os.path.dirname(os.path.abspath(__file__))
 if current_dir not in sys.path:
     sys.path.insert(0, current_dir)
 
-from PySide6.QtWidgets import QApplication
+from PySide6.QtWidgets import QApplication, QMessageBox
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QFont, QIcon
 
@@ -21,6 +22,33 @@ from classplanner.database.db_manager import DatabaseManager
 from classplanner.ui.styles import CLASSIC_DESKTOP_QSS, RESOURCES_DIR
 from classplanner.ui.main_window import MainWindow
 from classplanner.ui.dialogs.login_dialog import LoginDialog
+
+
+def _handle_unhandled_exception(exctype, value, tb):
+    """Crash handler to log errors and show a user-friendly error message."""
+    err_text = "".join(traceback.format_exception(exctype, value, tb))
+    sys.stderr.write(err_text + "\n")
+    try:
+        log_dir = os.path.join(os.path.expanduser("~"), ".classplanner")
+        os.makedirs(log_dir, exist_ok=True)
+        with open(os.path.join(log_dir, "crash.log"), "w", encoding="utf-8") as f:
+            f.write(err_text)
+    except Exception:
+        pass
+
+    try:
+        app = QApplication.instance()
+        if app is not None:
+            QMessageBox.critical(
+                None,
+                f"{APP_NAME} — Error",
+                f"An unexpected error occurred:\n\n{value}\n\nLog saved to ~/.classplanner/crash.log"
+            )
+    except Exception:
+        pass
+
+
+sys.excepthook = _handle_unhandled_exception
 
 
 def main():

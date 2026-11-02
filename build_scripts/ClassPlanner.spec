@@ -52,24 +52,31 @@ hidden_imports = [
     'classplanner.ui.widgets',
 ]
 
+# Determine base root directory dynamically
+spec_dir = os.path.dirname(os.path.abspath(SPEC)) if 'SPEC' in locals() else os.getcwd()
+if os.path.basename(spec_dir) == 'build_scripts':
+    root_dir = os.path.dirname(spec_dir)
+else:
+    root_dir = spec_dir
+
 # Collect resources and reportlab data files
 datas = [
-    ('../classplanner/resources', 'classplanner/resources'),
-    ('../classplanner/database/supabase_multitenant.sql', 'classplanner/database'),
+    (os.path.join(root_dir, 'classplanner', 'resources'), 'classplanner/resources'),
+    (os.path.join(root_dir, 'classplanner', 'database', 'supabase_multitenant.sql'), 'classplanner/database'),
 ] + collect_data_files('reportlab')
 
 # Determine platform-specific icon
 app_icon = None
 if sys.platform == 'win32':
-    app_icon = '../classplanner/resources/icon.ico'
+    app_icon = os.path.join(root_dir, 'classplanner', 'resources', 'icon.ico')
 elif sys.platform == 'darwin':
-    app_icon = '../classplanner/resources/icon.icns'
+    app_icon = os.path.join(root_dir, 'classplanner', 'resources', 'icon.icns')
 else:
-    app_icon = '../classplanner/resources/icon.png'
+    app_icon = os.path.join(root_dir, 'classplanner', 'resources', 'icon.png')
 
 a = Analysis(
-    ['../run.py'],
-    pathex=['..'],
+    [os.path.join(root_dir, 'run.py')],
+    pathex=[root_dir],
     binaries=[],
     datas=datas,
     hiddenimports=hidden_imports,

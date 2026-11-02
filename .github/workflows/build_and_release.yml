@@ -45,15 +45,22 @@ jobs:
         run: |
           iscc build_scripts/windows_installer.iss
 
-      - name: Verify Windows Installer
+      - name: Create Portable Windows ZIP
+        run: |
+          powershell Compress-Archive -Path dist/ClassPlanner.exe, README.md -DestinationPath dist/ClassPlanner-v1.0.0-Windows-Portable.zip
+
+      - name: Verify Windows Artifacts
         run: |
           dir dist\ClassPlanner-v1.0.0-Windows-Setup.exe
+          dir dist\ClassPlanner-v1.0.0-Windows-Portable.zip
 
       - name: Upload Windows Artifact
         uses: actions/upload-artifact@v4
         with:
           name: windows-installer
-          path: dist/ClassPlanner-v1.0.0-Windows-Setup.exe
+          path: |
+            dist/ClassPlanner-v1.0.0-Windows-Setup.exe
+            dist/ClassPlanner-v1.0.0-Windows-Portable.zip
           if-no-files-found: error
 
   # ============================================================================
@@ -203,6 +210,7 @@ jobs:
           prerelease: false
           files: |
             release_assets/ClassPlanner-v1.0.0-Windows-Setup.exe
+            release_assets/ClassPlanner-v1.0.0-Windows-Portable.zip
             release_assets/ClassPlanner-v1.0.0-macOS.dmg
             release_assets/classplanner_1.0.0_amd64.deb
             release_assets/ClassPlanner-v1.0.0-x86_64.AppImage
@@ -219,14 +227,20 @@ jobs:
 
             | Platform | Installer Package | Instructions |
             |---|---|---|
-            | **Windows** | `ClassPlanner-v1.0.0-Windows-Setup.exe` | Run the setup wizard to install with Start Menu and Desktop shortcuts |
+            | **Windows (Setup Wizard)** | `ClassPlanner-v1.0.0-Windows-Setup.exe` | Run the setup wizard to install with Start Menu and Desktop shortcuts |
+            | **Windows (Portable ZIP)** | `ClassPlanner-v1.0.0-Windows-Portable.zip` | No installation needed; extract zip and double-click `ClassPlanner.exe` |
             | **macOS** | `ClassPlanner-v1.0.0-macOS.dmg` | Open the DMG and drag **ClassPlanner** to your `Applications` folder |
             | **Linux (Ubuntu/Debian)** | `classplanner_1.0.0_amd64.deb` | Install via `sudo dpkg -i classplanner_1.0.0_amd64.deb` |
             | **Linux (Universal)** | `ClassPlanner-v1.0.0-x86_64.AppImage` | Make executable (`chmod +x`) and run directly |
 
+            ---
+
             > **🍎 macOS Note (First Launch)**:
             > Because ClassPlanner is distributed outside the Apple Mac App Store, macOS Gatekeeper may prompt *"Apple could not verify..."* on first launch.
             > **To open**: Drag **ClassPlanner** into `/Applications`, then **Right-Click ➔ Open** (or go to **System Settings ➔ Privacy & Security ➔ Click "Open Anyway"**).
+
+            > **🪟 Windows Note (SmartScreen)**:
+            > If Windows Defender SmartScreen displays *"Windows protected your PC"*, click **"More info"** and then click **"Run anyway"**.
 
             ---
 
