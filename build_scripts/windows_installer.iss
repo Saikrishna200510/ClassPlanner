@@ -5,7 +5,7 @@
 ; ==============================================================================
 
 #define MyAppName "ClassPlanner"
-#define MyAppVersion "1.0.0"
+#define MyAppVersion "1.0.1"
 #define MyAppPublisher "SL IT Solutions"
 #define MyAppURL "https://github.com/Saikrishna200510/ClassPlanner"
 #define MyAppExeName "ClassPlanner.exe"

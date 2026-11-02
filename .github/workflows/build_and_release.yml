@@ -47,20 +47,20 @@ jobs:
 
       - name: Create Portable Windows ZIP
         run: |
-          powershell Compress-Archive -Path dist/ClassPlanner.exe, README.md -DestinationPath dist/ClassPlanner-v1.0.0-Windows-Portable.zip
+          powershell Compress-Archive -Path dist/ClassPlanner.exe, README.md -DestinationPath dist/ClassPlanner-v1.0.1-Windows-Portable.zip
 
       - name: Verify Windows Artifacts
         run: |
-          dir dist\ClassPlanner-v1.0.0-Windows-Setup.exe
-          dir dist\ClassPlanner-v1.0.0-Windows-Portable.zip
+          dir dist\*.exe
+          dir dist\*.zip
 
       - name: Upload Windows Artifact
         uses: actions/upload-artifact@v4
         with:
           name: windows-installer
           path: |
-            dist/ClassPlanner-v1.0.0-Windows-Setup.exe
-            dist/ClassPlanner-v1.0.0-Windows-Portable.zip
+            dist/ClassPlanner-*-Windows-Setup.exe
+            dist/ClassPlanner-*-Windows-Portable.zip
           if-no-files-found: error
 
   # ============================================================================
@@ -96,13 +96,13 @@ jobs:
 
       - name: Verify macOS DMG
         run: |
-          ls -lh dist/ClassPlanner-v1.0.0-macOS.dmg
+          ls -lh dist/*.dmg
 
       - name: Upload macOS Artifact
         uses: actions/upload-artifact@v4
         with:
           name: macos-installer
-          path: dist/ClassPlanner-v1.0.0-macOS.dmg
+          path: dist/ClassPlanner-*-macOS.dmg
           if-no-files-found: error
 
   # ============================================================================
@@ -209,11 +209,11 @@ jobs:
           draft: false
           prerelease: false
           files: |
-            release_assets/ClassPlanner-v1.0.0-Windows-Setup.exe
-            release_assets/ClassPlanner-v1.0.0-Windows-Portable.zip
-            release_assets/ClassPlanner-v1.0.0-macOS.dmg
-            release_assets/classplanner_1.0.0_amd64.deb
-            release_assets/ClassPlanner-v1.0.0-x86_64.AppImage
+            release_assets/ClassPlanner-*-Windows-Setup.exe
+            release_assets/ClassPlanner-*-Windows-Portable.zip
+            release_assets/ClassPlanner-*-macOS.dmg
+            release_assets/classplanner_*_amd64.deb
+            release_assets/ClassPlanner-*-x86_64.AppImage
             release_assets/SHA256SUMS.txt
           body: |
             ## ClassPlanner ${{ steps.tag_info.outputs.tag }}

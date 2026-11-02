@@ -10,7 +10,7 @@ set -e
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT_DIR="$(cd "${SCRIPT_DIR}/.." && pwd)"
 
-VERSION="1.0.0"
+VERSION="${RELEASE_VERSION:-1.0.1}"
 DMG_NAME="ClassPlanner-v${VERSION}-macOS.dmg"
 APP_NAME="ClassPlanner.app"
 DIST_DIR="${ROOT_DIR}/dist"

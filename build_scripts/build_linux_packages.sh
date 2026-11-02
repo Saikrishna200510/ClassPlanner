@@ -9,7 +9,7 @@ set -e
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT_DIR="$(cd "${SCRIPT_DIR}/.." && pwd)"
 
-VERSION="1.0.0"
+VERSION="${RELEASE_VERSION:-1.0.1}"
 DIST_DIR="${ROOT_DIR}/dist"
 BINARY="${DIST_DIR}/ClassPlanner"
 

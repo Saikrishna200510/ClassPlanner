@@ -92,45 +92,73 @@ a = Analysis(
 
 pyz = PYZ(a.pure, a.zipped_data, cipher=block_cipher)
 
-exe = EXE(
-    pyz,
-    a.scripts,
-    a.binaries,
-    a.zipfiles,
-    a.datas,
-    [],
-    name='ClassPlanner',
-    debug=False,
-    bootloader_ignore_signals=False,
-    strip=False,
-    upx=True,
-    upx_exclude=[],
-    runtime_tmpdir=None,
-    console=False,  # Windowed GUI without console window
-    disable_windowed_traceback=False,
-    target_arch=None,
-    codesign_identity=None,
-    entitlements_file=None,
-    icon=app_icon
-)
-
-# For macOS .app bundle
+# On macOS, build a standard onedir bundle (COLLECT + BUNDLE) for native framework loading
 if sys.platform == 'darwin':
-    app = BUNDLE(
+    exe = EXE(
+        pyz,
+        a.scripts,
+        [],
+        exclude_binaries=True,
+        name='ClassPlanner',
+        debug=False,
+        bootloader_ignore_signals=False,
+        strip=False,
+        upx=False,
+        console=False,
+        disable_windowed_traceback=False,
+        icon=app_icon
+    )
+    coll = COLLECT(
         exe,
+        a.binaries,
+        a.zipfiles,
+        a.datas,
+        strip=False,
+        upx=False,
+        upx_exclude=[],
+        name='ClassPlanner'
+    )
+    app = BUNDLE(
+        coll,
         name='ClassPlanner.app',
-        icon='../classplanner/resources/icon.icns',
+        icon=app_icon,
         bundle_identifier='com.slit.classplanner',
         info_plist={
             'NSPrincipalClass': 'NSApplication',
             'NSAppleScriptEnabled': False,
             'CFBundleName': 'ClassPlanner',
             'CFBundleDisplayName': 'ClassPlanner',
+            'CFBundleExecutable': 'ClassPlanner',
+            'CFBundlePackageType': 'APPL',
             'CFBundleGetInfoString': 'ClassPlanner - Multi-College Automated Timetable Management System',
             'CFBundleIdentifier': 'com.slit.classplanner',
-            'CFBundleVersion': '1.0.0',
-            'CFBundleShortVersionString': '1.0.0',
+            'CFBundleVersion': '1.0.1',
+            'CFBundleShortVersionString': '1.0.1',
             'NSHumanReadableCopyright': 'Copyright © 2026 SL IT Solutions. All rights reserved.',
             'NSHighResolutionCapable': True,
+            'LSMinimumSystemVersion': '11.0',
         }
+    )
+else:
+    # Standalone single executable for Windows & Linux
+    exe = EXE(
+        pyz,
+        a.scripts,
+        a.binaries,
+        a.zipfiles,
+        a.datas,
+        [],
+        name='ClassPlanner',
+        debug=False,
+        bootloader_ignore_signals=False,
+        strip=False,
+        upx=False,
+        upx_exclude=[],
+        runtime_tmpdir=None,
+        console=False,
+        disable_windowed_traceback=False,
+        target_arch=None,
+        codesign_identity=None,
+        entitlements_file=None,
+        icon=app_icon
     )
